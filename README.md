@@ -1,0 +1,2 @@
+# BotsCollectors
+ bots collect resources
