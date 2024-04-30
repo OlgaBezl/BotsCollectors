@@ -5,11 +5,11 @@ using UnityEngine;
 public class MaxScoreView : MonoBehaviour
 {
     private TextMeshProUGUI _text;
-    [SerializeField] private Score _score;
+    [SerializeField] private BaseCounter _baseCounter;
 
     private void Start()
     {
         _text = GetComponent<TextMeshProUGUI>();
-        _text.text = " / " + _score.MaxValue.ToString();
+        _text.text = " / " + _baseCounter.MaxValue.ToString();
     }
 }

@@ -4,22 +4,19 @@ using UnityEngine;
 public class CrystalGenerator : MonoBehaviour
 {
     [SerializeField] private float _delay;
-
-    [SerializeField] private float _leftBound;
-    [SerializeField] private float _rightBound;
-    [SerializeField] private float _topBound;
-    [SerializeField] private float _bottomBound;
+    [SerializeField] private PlayingField _playingField;
     [SerializeField] private float _indent = 2;
-        
+    [SerializeField] private float _maxTryGenerateCount = 5;
+    [SerializeField] private LayerMask _excludedLayerMask;
     [SerializeField] private CrystalPool _crystalPool;
 
     private bool _isActive;
     private Coroutine _coroutine;
 
-    public Coroutine StartGeneration()
+    public void StartWork()
     {
         _isActive = true;
-        return _coroutine = StartCoroutine(GenerateCrystals());
+        _coroutine = StartCoroutine(GenerateCrystals());
     }
 
     public void Reset()
@@ -35,40 +32,36 @@ public class CrystalGenerator : MonoBehaviour
 
         while (_isActive)
         {
-            Spawn();
+            TrySpawn();
             yield return wait;
         }
     }
 
-    private void Spawn()
+    private void TrySpawn()
     {
-        Crystal crystal = _crystalPool.GetObject();
-        crystal.transform.position = GetSpawnPoint();
+        Vector3? spawnPosition = TryGetSpawnPoint();
+
+        if(spawnPosition.HasValue)
+        {
+            Crystal crystal = _crystalPool.GetObject();
+            crystal.SetPosition(spawnPosition.Value, _crystalPool);
+        }
     }
 
-    private Vector3 GetSpawnPoint()
+    private Vector3? TryGetSpawnPoint()
     {
-        float spawnPositionX = Random.Range(_rightBound, _leftBound);
-        float topBound = _topBound;
-        float bottomBound = _bottomBound;
+        int tryCount = 0;
 
-        if (spawnPositionX > (transform.position.x - _indent) &&
-            spawnPositionX < (transform.position.x + _indent))
+        while (tryCount < _maxTryGenerateCount)
         {
-            bool isTopInterval = System.Convert.ToBoolean(Random.Range(0, 2));
+            tryCount++;
+            Vector3 spawnPosition = _playingField.GetRandomPosition();
+            Collider[] hitColliders = Physics.OverlapSphere(spawnPosition, _indent, _excludedLayerMask);
 
-            if (isTopInterval)
-            {
-                bottomBound = transform.position.y + _indent;
-            }
-            else
-            {
-                topBound = transform.position.y - _indent;
-            }
+            if (hitColliders.Length == 0)
+                return spawnPosition;
         }
 
-        float spawnPositionZ = Random.Range(topBound, bottomBound);
-
-        return new Vector3(spawnPositionX, transform.position.y, spawnPositionZ);
+        return null;
     }
 }

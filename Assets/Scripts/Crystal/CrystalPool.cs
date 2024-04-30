@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,65 +8,57 @@ public class CrystalPool : MonoBehaviour
     [SerializeField] private Crystal _prefab;
 
     private Queue<Crystal> _pool;
-    private List<Crystal> _activeObjects;
-
-    public event Action CrystalAbsorbed;
+    private List<Crystal> _allCrystals;
 
     private void Awake()
     {
         _pool = new Queue<Crystal>();
-        _activeObjects = new List<Crystal>();
+        _allCrystals = new List<Crystal>();
     }
 
     private void OnDisable()
     {
-        foreach (Crystal crystal in _pool)
+        foreach (Crystal crystal in _allCrystals)
         {
-            crystal.Absorbed -= AbsorbCrystal;
+            Destroy(crystal.gameObject);
         }
+
+        _allCrystals.Clear();
+        _pool.Clear();
     }
 
     public void Reset()
     {
         OnDisable();
-        _pool.Clear();
     }
 
     public Crystal GetObject()
     {
+        Crystal newCrystal;
+
         if (_pool.Count == 0)
         {
-            Crystal newCrystal = Instantiate(_prefab);
+            newCrystal = Instantiate(_prefab);
             newCrystal.transform.parent = _container;
-            newCrystal.Absorbed += AbsorbCrystal;
-            _activeObjects.Add(newCrystal);
-
-            return newCrystal;
+            _allCrystals.Add(newCrystal);
+        }
+        else
+        {
+            newCrystal = _pool.Dequeue();
         }
 
-        Crystal crystal = _pool.Dequeue();
-        crystal.gameObject.SetActive(true);
-        _activeObjects.Add(crystal);
-
-        return crystal;
+        newCrystal.Activate();
+        return newCrystal;
     }
 
     public List<Crystal> GetAllActive()
     {
-        return _activeObjects.Where(crystal => crystal.IsPickUped == false).ToList();
+        return _allCrystals.Where(crystal => crystal.CurrentState == CrystalState.Free || crystal.CurrentState == CrystalState.Found).ToList();
     }
 
-    private void AddObject(Crystal crystal)
-    {
-        _pool.Enqueue(crystal);
-        _activeObjects.Remove(crystal);
-        crystal.gameObject.SetActive(false);
-    }
-
-    private void AbsorbCrystal(Crystal crystal)
+    public void AbsorbCrystal(Crystal crystal)
     {
         crystal.transform.SetParent(_container);
-        AddObject(crystal);
-        CrystalAbsorbed?.Invoke();
+        _pool.Enqueue(crystal);
     }
 }

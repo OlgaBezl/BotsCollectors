@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5996138175471023306}
   - component: {fileID: 2533330684472347996}
   - component: {fileID: 4732220356897154561}
+  - component: {fileID: 7741218286343007418}
   m_Layer: 0
   m_Name: Crystal
   m_TagString: Untagged
@@ -46,6 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c26b262c820fa6b48bd5628d6763b369, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _materialChanger: {fileID: 7741218286343007418}
+  _collider: {fileID: 4732220356897154561}
+  IsFree: 1
+  IsFound: 0
 --- !u!135 &4732220356897154561
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -63,10 +68,25 @@ SphereCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 0.75
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &7741218286343007418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 625791254746489620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 810fdf5cdb0390443b5665b6feafab79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _meshRenderers:
+  - {fileID: 3253370944608091227}
+  _alternativeMaterial: {fileID: 2100000, guid: eb7945687d1de9a438f8dfcbe7aef2a4, type: 2}
 --- !u!1 &3319371309346132241
 GameObject:
   m_ObjectHideFlags: 0
@@ -129,7 +149,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: eb7945687d1de9a438f8dfcbe7aef2a4, type: 2}
+  - {fileID: 2100000, guid: e2c1b6503a921fd46b94b80ac2153aa8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

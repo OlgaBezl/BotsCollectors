@@ -1,19 +1,20 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
     [SerializeField] private float _speed = 5f; 
     [SerializeField] private float _holdDistance = 1f;
-    public bool IsBusy { get; private set; }
+    [SerializeField] private MaterialChanger _materialChanger;
 
     private Vector3 _targetPosition = Vector3.zero;
-    private Vector3 _parentBasePosition;
-    private Crystal _currentCrystal;
+
+    public UnitState CurrentState { get; private set; } = UnitState.Wait;
+    public Vector3 ParentBasePosition { get; private set; }
+    public Crystal CurrentCrystal {get; private set;}
 
     private void Update()
     {
-        if (IsBusy)
+        if (CurrentState != UnitState.Wait)
         {
             Vector3 direction = _targetPosition - transform.position;
             transform.Translate(_speed * Time.deltaTime * direction.normalized, Space.World);
@@ -21,36 +22,52 @@ public class Unit : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if(_currentCrystal == null)
-        {
-            return;
-        }
-
-        if (other.TryGetComponent(out Base parentBase))
-        {
-            parentBase.AbsorbCristal();
-            _currentCrystal.Absorb();
-            IsBusy = false;
-        }
-    }
-
     public void SetParentBasePosition(Vector3 position)
     {
-        _parentBasePosition = position;
+        ParentBasePosition = position;
     }
 
-    public void MoveTo(Vector3 targetPosition)
+    public void MoveToCrystal(Crystal crystal)
     {
-        IsBusy = true;
-        _targetPosition = targetPosition;        
+        CurrentState = UnitState.MoveToCristal;
+        CurrentCrystal = crystal;
+        MoveTo(crystal.transform.position);
     }
 
-    public void PickUpCrystal(Crystal crystal)
+    public void MoveToFlag(Flag flag)
     {
-        _currentCrystal = crystal;
-        _currentCrystal.PickUp(transform, _holdDistance);
-        MoveTo(_parentBasePosition);
+        CurrentState = UnitState.MoveToFlag;
+        MoveTo(flag.transform.position);
+    }
+
+    public void PickUpCrystal()
+    {
+        CurrentCrystal.PickUp(transform, _holdDistance);
+        MoveTo(ParentBasePosition);
+        CurrentState = UnitState.MoveToParentBase;
+    }
+
+    public void ReturnToBase(Base parentBase)
+    {
+        CurrentCrystal.Absorb();
+
+        _materialChanger.SetDefaultMaterial();
+        CurrentState = UnitState.Wait;
+
+        parentBase.ReturnUnitWithCristal();
+    }
+
+    public void BuildBase(Flag flag)
+    {
+        SetParentBasePosition(flag.transform.position);
+        flag.BuildBase(this);
+        _materialChanger.SetDefaultMaterial();
+        CurrentState = UnitState.Wait;
+    }
+
+    private void MoveTo(Vector3 targetPosition)
+    {
+        _targetPosition = targetPosition;
+        _materialChanger.SetAlternativeMaterial();
     }
 }

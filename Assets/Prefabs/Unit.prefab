@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8702480355573931817}
   - component: {fileID: 6659122511377393684}
   - component: {fileID: 5186076853624328178}
+  - component: {fileID: 1104592929340946805}
   - component: {fileID: 4634029507147307867}
   - component: {fileID: 8002636824857689999}
   m_Layer: 0
@@ -50,6 +51,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 3
   _holdDistance: 1
+  _materialChanger: {fileID: 1104592929340946805}
+  _targetPosition: {x: 0, y: 0, z: 0}
+  _parentBasePosition: {x: 0, y: 0, z: 0}
+  _currentCrystal: {fileID: 0}
 --- !u!65 &5186076853624328178
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -71,6 +76,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &1104592929340946805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1876580515751533345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 810fdf5cdb0390443b5665b6feafab79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _meshRenderers:
+  - {fileID: 4254163807651638708}
+  _alternativeMaterial: {fileID: 2100000, guid: 621f23fd5a6df3140a0cef3965ee43a7, type: 2}
 --- !u!114 &4634029507147307867
 MonoBehaviour:
   m_ObjectHideFlags: 0

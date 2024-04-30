@@ -9,9 +9,16 @@ public class MenuButton : MonoBehaviour
     [SerializeField] private float _movingPosition;
     [SerializeField] private float _movingDuration;
 
-    private float _activePosition;
+    private float _startPosition;
+    private RectTransform _rectTransform;
 
     public event Action Click;
+
+    private void Awake()
+    {
+        _rectTransform = (RectTransform)transform;
+        _startPosition = _rectTransform.anchoredPosition.x;
+    }
 
     private void OnClick()
     {
@@ -28,21 +35,17 @@ public class MenuButton : MonoBehaviour
 
     private void Show()
     {
-        RectTransform rectTransform = (RectTransform)transform;
-        _activePosition = rectTransform.anchoredPosition.x;
         gameObject.SetActive(true);
 
         DOTween.Sequence().
-            Append(rectTransform.DOAnchorPosX(_movingPosition, 0f)).
-            Append(rectTransform.DOAnchorPosX(_activePosition, _movingDuration));
+            Append(_rectTransform.DOAnchorPosX(_movingPosition, 0f)).
+            Append(_rectTransform.DOAnchorPosX(_startPosition, _movingDuration));
     }
 
     private void Hide()
     {
-        RectTransform rectTransform = (RectTransform)transform;
-
         DOTween.Sequence().
-            Append(rectTransform.DOAnchorPosX(_movingPosition, _movingDuration)).
+            Append(_rectTransform.DOAnchorPosX(_movingPosition, _movingDuration)).
             onComplete += () => gameObject.SetActive(false);
     }
 }

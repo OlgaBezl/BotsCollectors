@@ -2,21 +2,25 @@ using UnityEngine;
 
 public class LevelEnd : MonoBehaviour
 {
-    [SerializeField] private Score _score;
+    [SerializeField] private BaseCounter _baseCounter;
     [SerializeField] private CrystalGenerator _crystalGenerator; 
-    [SerializeField] private Base _base; 
+    [SerializeField] private BaseGenerator _baseGenerator; 
     [SerializeField] private ResetButton _resetButton;
 
     private void OnEnable()
     {
-        _score.Finished += OnFinished;
+        _baseCounter.Finished += OnFinished;
+    }
+
+    private void OnDisable()
+    {
+        _baseCounter.Finished -= OnFinished;
     }
 
     private void OnFinished()
     {
-        _score.Finished -= OnFinished;
         _resetButton.Active();
         _crystalGenerator.Reset();
-        _base.Reset();
+        _baseGenerator.Reset();
     }
 }
